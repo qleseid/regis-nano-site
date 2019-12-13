@@ -77,7 +77,7 @@ class UserDB extends mysqli
     //GET USER INFO BY NAME
     public function get_user_info_by_name($name) 
     {
-        return $this->query("SELECT id, email FROM users WHERE name=" . $name)
+        return $this->query("SELECT id, email FROM users WHERE name = '". $name ."'")
                 ->fetch_array(MYSQLI_NUM);
     }
     

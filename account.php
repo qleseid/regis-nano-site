@@ -54,8 +54,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
         echo("UPDATE FAILURE!");
     }
 }
-?>
- 
+?> 
  <html>
      <head>
          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -69,8 +68,6 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
                      Username <input type="text" id="user" name="user" 
                                      value="<?php echo$userName;?>"
                                      readonly="readonly"/></br>
-                     <div class="error" id="divUserMess"></div>
-                     <div class="error" id="divPassMess"></div>
                      Email<br/> 
                      <input type="text" name="email" 
                             value="<?php echo$userEmail;?>"
