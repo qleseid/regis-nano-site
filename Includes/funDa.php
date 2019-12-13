@@ -74,6 +74,13 @@ class UserDB extends mysqli
         }
     }
     
+    //GET USER INFO BY NAME
+    public function get_user_info_by_name($name) 
+    {
+        return $this->query("SELECT id, email FROM users WHERE name=" . $name)
+                ->fetch_array(MYSQLI_NUM);
+    }
+    
     //CHECK FOR USER NAME
     public function check_for_user($name) 
     {
@@ -89,13 +96,7 @@ class UserDB extends mysqli
         {
             return true;
         }
-    }
-    
-    //*******TODO**********GET USER BY USER ID
-    public function get_user_by_user_id($userID) 
-    {
-        return $this->query("SELECT id, description, due_date FROM wishes WHERE user_id=" . $userID);
-    }
+    }    
 
     //CREATE USER
     public function create_user ($name, $password, $email)
@@ -108,6 +109,15 @@ class UserDB extends mysqli
         return $result;
     }
 
+    //UPDATE USER
+    public function update_user($id, $email)
+    {
+        $uid = $this->real_escape_string($id);
+        $eml = $this->real_escape_string($email);
+        return $this->query("UPDATE users SET email = '"
+                . $eml . "' WHERE id = '". $uid . "'");        
+    }
+    
     //VERIFY USER
     public function verify_user_credentials($name, $password) 
     {
@@ -180,7 +190,7 @@ class UserDB extends mysqli
         return $this->query("SELECT id, description, due_date FROM wishes WHERE id = " . $wishID);
     }
 
-    //*******TODO**********DELET WISH
+    //*******TODO**********DELETE WISH
     function delete_wish($wishID) 
     {
         $this->query("DELETE FROM wishes WHERE id = " . $wishID);

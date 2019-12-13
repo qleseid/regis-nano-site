@@ -21,7 +21,7 @@ if(!$_SESSION['user'])
     exit;
 }
 
-//Input a username after creation
+//Input debug info
 if($_SESSION['cmd'])
 {
     //echo ("HOME: " .$_SESSION['cmd']);
