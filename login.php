@@ -22,7 +22,7 @@ if($_SESSION['name'])
     $userNa = $_SESSION['name'];
 }
 
-//Input a username after creation
+//Input debug info
 if($_SESSION['debug'])
 {
     echo $_SESSION['debug'];

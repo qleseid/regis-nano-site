@@ -21,7 +21,7 @@ if(!$_SESSION['user'])
     exit;
 }
 
-//Input a username after creation
+//Input debug info
 if($_SESSION['cmd'])
 {
     //echo ("HOME: " .$_SESSION['cmd']);
@@ -64,12 +64,13 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
     }  
     else
     {
-        //TODO: either new page or function call TBD
+        /*TODO: either new page or function call TBD
         $_SESSION['cmd'] = 'account';
         $_SESSION['title'] = filter_input(INPUT_POST, 'title');
         $_SESSION['text'] = filter_input(INPUT_POST, 'text');
         $_SESSION['data'] = filter_input(INPUT_POST, 'data');
-        header('Location: boxview.php');
+         */
+        header('Location: account.php');
         exit;
     }  
 }
