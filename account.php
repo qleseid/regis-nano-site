@@ -46,7 +46,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
     
     if ($updateSuccess == true) 
     {
-        header('Location: home.php');
+        header('Location:'. $_SESSION['page'].'.php');
         exit;
     }
     else
@@ -77,7 +77,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
                      <input type="hidden" name="id" value="<?php echo$userId;?>"/>
                      <input type="submit" id="createBtn" value="Update">
                  </form>
-                 <form name="cancelAccount" action="home.php" method="GET">
+                 <form name="cancelAccount" action="<?php echo $_SESSION['page'].".php"?>" method="GET">
                      <input type="submit" id="cancelBtn" value="Cancel">
                  </form>
              </div>

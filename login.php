@@ -46,7 +46,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
     if ($logonSuccess == true) 
     {
         $_SESSION['user'] = filter_input(INPUT_POST, 'user') ;
-        header('Location: home.php');
+        header('Location: locations.php');
         exit;
     }
 }

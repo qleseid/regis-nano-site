@@ -111,40 +111,17 @@ function selectImage(image)
 }
 
 //NAVIGATION TO NEXT PAGE
-function nav()
+function nav(page)
     {
-        window.location.href = "boxes.php";
+        window.location.href = page;
     }
-          
-//NAVIGATION FOR MENU ITEMS
-function menuNav(nav)
-    {
-        //document.getElementById("titleArea").value = "In menuNav!";                
-        switch (nav)
-        {
-            case 'account':
-                post('home.php','account', 'input');
-                break;
-            case 'update':
-                post('update');
-                break;
-            case 'delete':
-                post('delete');
-                break;
-            case 'new':
-                post('new');
-                break;
-            default:
-                break;
-        }
-    }
-       
+
 //METHOD TO CREATE A PHP POST
 function post(action, name, elemt)
     {
         //document.getElementById("titleArea").value = "In Post!";
         const form = document.createElement('form');
-        var fields = ['titleArea', 'textArea', name];
+        var fields = ['titleArea', 'textArea', 'cmd', 'id'];
         form.method = 'POST';
         form.action = action;
 
@@ -154,9 +131,13 @@ function post(action, name, elemt)
             hiddenField.type = 'hidden';
             hiddenField.name = x;
 
-            if (x !== name)
+            if (x !== 'cmd')
             {
                 hiddenField.value = document.getElementById(x).value;
+            }
+            else
+            {
+                hiddenField.value = name;
             }
             form.appendChild(hiddenField);
         }

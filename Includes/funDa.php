@@ -9,6 +9,68 @@
  */
 -->
 <?php //funDa.php
+
+function navHeader($page)
+{
+    if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
+    {
+        switch (filter_input(INPUT_POST, 'cmd'))
+        {
+            case 'new':
+                popSess('new', $page);
+                header('Location: new.php');
+                exit;
+            case 'delete':
+                popSess('delete', $page);
+                header('Location: delete.php');
+                exit;
+            case 'update':
+                popSess('update', $page);
+                header('Location: update.php');
+                exit;
+            case 'account':
+                popSess('account', $page);
+                header('Location: account.php');
+                exit;
+            case 'logout':
+                session_unset();
+                setcookie('','',1);
+                session_destroy();
+                header('Location: login.php');
+                exit;
+            default :
+                header('Location: locations.php');
+                exit;
+        }
+    }
+}
+
+function popSess($cmd, $page)
+{
+    $_SESSION['cmd']   = $cmd;
+    $_SESSION['page']   = $page;
+    $_SESSION['id']    = filter_input(INPUT_POST, 'id');
+    $_SESSION['title'] = filter_input(INPUT_POST, 'title');
+    $_SESSION['text']  = filter_input(INPUT_POST, 'text');
+    $_SESSION['data']  = filter_input(INPUT_POST, 'data');
+}
+
+function navBuild($currPage)
+{
+    if($currPage !== 'locations.php')
+    {
+        echo ("<li onclick=\"javascript:post('$currPage', 'home', 'input')\">Home</li>");
+    }
+echo <<<_END
+    <li onclick="javascript:post('$currPage', 'account', 'input')">Account</li>
+    <li onclick="javascript:post('$currPage', 'new', 'input')">New</li>
+    <li onclick="javascript:post('$currPage', 'update', 'input')">Update</li>
+    <li onclick="javascript:post('$currPage', 'delete', 'input')">Delete</li>
+    <li onclick="javascript:post('$currPage', 'logout', 'input')">Logout</li>
+_END;
+
+}
+
 class UserDB extends mysqli 
 {
     // single instance of self shared among all instances

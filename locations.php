@@ -27,56 +27,8 @@ if($_SESSION['cmd'])
     //echo ("HOME: " .$_SESSION['cmd']);
 }
 
-if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST") 
-{
-    /*******************TODO**********************/
-    //Logic for site navigation from header options
-    if (filter_input(INPUT_POST, 'new')) 
-    {
-        //TODO: either new page or function call TBD
-        $_SESSION['cmd'] = 'new';
-        $_SESSION['title'] = filter_input(INPUT_POST, 'title');
-        $_SESSION['text'] = filter_input(INPUT_POST, 'text');
-        $_SESSION['data'] = filter_input(INPUT_POST, 'data');
-        header('Location: new.php');
-        exit;
-    } 
-    else if (filter_input(INPUT_POST, 'delete')) 
-    {
-        //TODO: either new page or function call TBD
-        $_SESSION['cmd'] = 'delete';
-        $_SESSION['title'] = filter_input(INPUT_POST, 'title');
-        $_SESSION['text'] = filter_input(INPUT_POST, 'text');
-        $_SESSION['data'] = filter_input(INPUT_POST, 'data');
-        header('Location: delete.php');
-        exit;
-    } 
-        //TODO: either new page or function call TBD
-    else if (filter_input(INPUT_POST, 'update')) 
-    {
-        //TODO: either new page or function call TBD
-        $_SESSION['cmd'] = 'update';
-        $_SESSION['title'] = filter_input(INPUT_POST, 'title');
-        $_SESSION['text'] = filter_input(INPUT_POST, 'text');
-        $_SESSION['data'] = filter_input(INPUT_POST, 'data');
-        header('Location: update.php');
-        exit;
-    }  
-    else
-    {
-        /*TODO: either new page or function call TBD
-        $_SESSION['cmd'] = 'account';
-        $_SESSION['title'] = filter_input(INPUT_POST, 'title');
-        $_SESSION['text'] = filter_input(INPUT_POST, 'text');
-        $_SESSION['data'] = filter_input(INPUT_POST, 'data');
-         */
-        header('Location: account.php');
-        exit;
-    }  
-}
-echo <<<_END
- 
-_END;
+navHeader('locations');
+
 ?>
 <html>
     <head>
@@ -91,10 +43,7 @@ _END;
                     <div class="hd-heading">
                         <h1>Storage Box: <h2>Locations</h2></h1>
                         <menu>
-                            <li onclick="javascript:menuNav('account')">Account</li><!--******FIX-->
-                            <li><a href="newBox.php">New</a></li><!--******FIX-->
-                            <li><a href="edit.php">Update</a></li><!--******FIX-->
-                            <li><a href="boxes.php">Delete</a></li><!--******FIX-->
+                            <?php navBuild('locations.php'); ?>
                         </menu>
                     </div>
                 </div>
@@ -104,11 +53,12 @@ _END;
         <textarea id="titleArea">
  This is where the Location Title will go!   
         </textarea>
+        <input type="hidden" id="id" value="1"/>
         <div>
             <div class="pos">
 
                 <div class="bin">
-                    <div class="big" onclick="javascript:nav()">
+                    <div class="big" onclick="javascript:nav('boxes.php')">
                         <img class="sel" id="selectedImage" src="image/location.jpeg">
                     </div>
 
