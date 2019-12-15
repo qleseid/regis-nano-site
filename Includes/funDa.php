@@ -195,29 +195,29 @@ class UserDB extends mysqli
     //CREATE ITEM
     public function create_item($page, $pageId, $titleArea, $textArea)
     {
-        echo"IN CREATE ITEM</br>";
+        //echo"IN CREATE ITEM</br>";
         $tiA = $this->real_escape_string($titleArea);
         $teA = $this->real_escape_string($textArea);
         $result = false;
         
         if (count($_FILES) > 0)
         {
-            echo"IS A FILE</br>";
+            //echo"IS A FILE</br>";
             if (is_uploaded_file($_FILES['item']['tmp_name']))
             {
-                echo"THE FILE IS UPLOADED</br>";
+                //echo"THE FILE IS UPLOADED</br>";
                 $targetDir = "/home/gangsta/Pictures/uploads/";
                 //$targetDir = "/media/gangsta/CEA43582A4356E59/Folder/uploads/";
                 $fileName = basename($_FILES["item"]["name"]);
                 $targetFilePath = $targetDir . date(DATE_ATOM,mktime()) . $fileName ;                        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
                 $allowTypes = array('jpg','png','jpeg','gif','pdf', 'webp');
-                echo"BEFORE TYPE CHECK:</br>" . $targetFilePath . "</BR>";
+                //echo"BEFORE TYPE CHECK:</br>" . $targetFilePath . "</BR>";
                 if(in_array($fileType, $allowTypes))
                 {
-                    echo"CORRECT FILE TYPE</br>";
+                    //echo"CORRECT FILE TYPE</br>";
                     if(move_uploaded_file($_FILES["item"]["tmp_name"], $targetFilePath))
                     {
-                        echo"BEFORE QUERY</br>";
+                        //echo"BEFORE QUERY</br>";
                         echo"INSERT INTO ".$page." VALUES "
                             . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
                             . $targetFilePath . "','" . $teA . "')";
