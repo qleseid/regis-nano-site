@@ -53,12 +53,12 @@ navHeader('locations');
         <textarea id="titleArea">
  This is where the Location Title will go!   
         </textarea>
-        <input type="hidden" id="id" value="1"/>
+        <input type="hidden" id="id" value="4"/>
         <div>
             <div class="pos">
 
                 <div class="bin">
-                    <div class="big" onclick="javascript:nav('boxes.php')">
+                    <div class="big" onclick="<?php $_SESSION['id'] = 4 ?>;javascript:nav('boxes.php')">
                         <img class="sel" id="selectedImage" src="image/location.jpeg">
                     </div>
 

@@ -50,9 +50,8 @@ function popSess($cmd, $page)
     $_SESSION['cmd']   = $cmd;
     $_SESSION['page']   = $page;
     $_SESSION['id']    = filter_input(INPUT_POST, 'id');
-    $_SESSION['title'] = filter_input(INPUT_POST, 'title');
-    $_SESSION['text']  = filter_input(INPUT_POST, 'text');
-    $_SESSION['data']  = filter_input(INPUT_POST, 'data');
+    $_SESSION['titleArea'] = filter_input(INPUT_POST, 'titleArea');
+    $_SESSION['textArea']  = filter_input(INPUT_POST, 'textArea');
 }
 
 function navBuild($currPage)
@@ -186,13 +185,53 @@ class UserDB extends mysqli
         $nam = $this->real_escape_string($name);
         $pword = $this->real_escape_string($password);
 
-        $result = $this->query("SELECT password FROM users
+        $result = $this->query("SELECT password, id FROM users
  	           WHERE name = '" . $nam . "'")->fetch_array(MYSQLI_NUM);
-        //$_SESSION['debug'] .= " Result: " . $result[0];
+        $_SESSION['userId'] = $result[1];
         
         return (password_verify($pword, $result[0]));
     }
 
+    //CREATE ITEM
+    public function create_item($page, $pageId, $titleArea, $textArea)
+    {
+        echo"IN CREATE ITEM</br>";
+        $tiA = $this->real_escape_string($titleArea);
+        $teA = $this->real_escape_string($textArea);
+        $result = false;
+        
+        if (count($_FILES) > 0)
+        {
+            echo"IS A FILE</br>";
+            if (is_uploaded_file($_FILES['item']['tmp_name']))
+            {
+                echo"THE FILE IS UPLOADED</br>";
+                $targetDir = "/home/gangsta/Pictures/uploads/";
+                //$targetDir = "/media/gangsta/CEA43582A4356E59/Folder/uploads/";
+                $fileName = basename($_FILES["item"]["name"]);
+                $targetFilePath = $targetDir . date(DATE_ATOM,mktime()) . $fileName ;                        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+                $allowTypes = array('jpg','png','jpeg','gif','pdf', 'webp');
+                echo"BEFORE TYPE CHECK:</br>" . $targetFilePath . "</BR>";
+                if(in_array($fileType, $allowTypes))
+                {
+                    echo"CORRECT FILE TYPE</br>";
+                    if(move_uploaded_file($_FILES["item"]["tmp_name"], $targetFilePath))
+                    {
+                        echo"BEFORE QUERY</br>";
+                        echo"INSERT INTO ".$page." VALUES "
+                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
+                            . $targetFilePath . "','" . $teA . "')";
+                        $result = $this->query("INSERT INTO ".$page." VALUES "
+                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
+                            . $targetFilePath . "','" . $teA . "')");
+                        echo"MOVE IMAGE SUCCESS</br>";
+                    }
+                }                    
+            }                
+        }  
+        return $result;        
+    }
+    
     //*******TODO**********INSERT WISH
     function insert_wish($userID, $description, $duedate) 
     {

@@ -47,7 +47,7 @@ navHeader('items');
         <textarea id="titleArea">
  This is where the Title will go!   
         </textarea>
-        <input type="hidden" id="id" value="1"/>
+        <input type="hidden" id="id" value="6"/>
         <div>
             <div class="pos">
 
