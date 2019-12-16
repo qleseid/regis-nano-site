@@ -9,6 +9,80 @@
  */
 -->
 <?php //funDa.php
+
+function navHeader($page)
+{
+    if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
+    {
+        switch (filter_input(INPUT_POST, 'cmd'))
+        {
+            case 'new':
+                popSess('new', $page);
+                header('Location: new.php');
+                exit;
+            case 'delete':
+                popSess('delete', $page);
+                header('Location: delete.php');
+                exit;
+            case 'update':
+                popSess('update', $page);
+                header('Location: update.php');
+                exit;
+            case 'account':
+                popSess('account', $page);
+                header('Location: account.php');
+                exit;
+            case 'logout':
+                session_unset();
+                setcookie('','',1);
+                session_destroy();
+                header('Location: login.php');
+                exit;
+            default :
+                header('Location: locations.php');
+                exit;
+        }
+    }
+}
+
+function popSess($cmd, $page)
+{
+    $_SESSION['cmd']   = $cmd;
+    $_SESSION['page']   = $page;
+    $_SESSION['id']    = filter_input(INPUT_POST, 'id');
+    $_SESSION['owner']    = filter_input(INPUT_POST, 'owner');
+    $_SESSION['titleArea'] = filter_input(INPUT_POST, 'titleArea');
+    $_SESSION['textArea']  = filter_input(INPUT_POST, 'textArea');
+}
+
+function navBuild($currPage)
+{
+    if($currPage !== 'locations.php')
+    {
+        echo ("<li onclick=\"javascript:post('$currPage', 'home', 'input')\">Home</li>");
+    }
+echo <<<_END
+    <li onclick="javascript:post('$currPage', 'account', 'input')">Account</li>
+    <li onclick="javascript:post('$currPage', 'new', 'input')">New</li>
+    <li onclick="javascript:post('$currPage', 'update', 'input')">Update</li>
+    <li onclick="javascript:post('$currPage', 'delete', 'input')">Delete</li>
+    <li onclick="javascript:post('$currPage', 'logout', 'input')">Logout</li>
+_END;
+
+}
+
+function base64_encode_image($file) 
+{
+    $filetype = filetype(basename($file));
+    if ($file) 
+    {
+        return 'data:image/' 
+                . $filetype 
+                . ';base64,' 
+                . base64_encode(fread(fopen($file, "r"), filesize($file)));
+    }
+}
+
 class UserDB extends mysqli 
 {
     // single instance of self shared among all instances
@@ -124,13 +198,61 @@ class UserDB extends mysqli
         $nam = $this->real_escape_string($name);
         $pword = $this->real_escape_string($password);
 
-        $result = $this->query("SELECT password FROM users
+        $result = $this->query("SELECT password, id FROM users
  	           WHERE name = '" . $nam . "'")->fetch_array(MYSQLI_NUM);
-        //$_SESSION['debug'] .= " Result: " . $result[0];
+        $_SESSION['userId'] = $result[1];
         
         return (password_verify($pword, $result[0]));
     }
 
+    //CREATE ITEM
+    public function create_item($page, $pageId, $titleArea, $textArea)
+    {
+        //echo"IN CREATE ITEM</br>";
+        $tiA = $this->real_escape_string($titleArea);
+        $teA = $this->real_escape_string($textArea);
+        $result = false;
+        
+        if (count($_FILES) > 0)
+        {
+            //echo"IS A FILE</br>";
+            if (is_uploaded_file($_FILES['item']['tmp_name']))
+            {
+                //echo"THE FILE IS UPLOADED</br>";
+                $targetDir = "/home/gangsta/Pictures/uploads/";
+                //$targetDir = "/media/gangsta/CEA43582A4356E59/Folder/uploads/";
+                $fileName = basename($_FILES["item"]["name"]);
+                $targetFilePath = $targetDir . date(DATE_ATOM,mktime()) . $fileName ;                        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+                $allowTypes = array('jpg','png','jpeg','gif','pdf', 'webp');
+                //echo"BEFORE TYPE CHECK:</br>" . $targetFilePath . "</BR>";
+                if(in_array($fileType, $allowTypes))
+                {
+                    //echo"CORRECT FILE TYPE</br>";
+                    if(move_uploaded_file($_FILES["item"]["tmp_name"], $targetFilePath))
+                    {
+                        //echo"BEFORE QUERY</br>";
+                        echo"INSERT INTO ".$page." VALUES "
+                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
+                            . $targetFilePath . "','" . $teA . "')";
+                        $result = $this->query("INSERT INTO ".$page." VALUES "
+                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
+                            . $targetFilePath . "','" . $teA . "')");
+                        echo"MOVE IMAGE SUCCESS</br>";
+                    }
+                }                    
+            }                
+        }  
+        return $result;        
+    }
+
+    //GET ITEMS BY OWNER
+    public function get_items_by_owner($ownerID, $page) 
+    {
+        $oid = $this->real_escape_string($ownerID);
+        $pg = $this->real_escape_string($page);
+        return $this->query("SELECT * FROM ".$pg." WHERE owner_id = " . $oid);
+    }
+    
     //*******TODO**********INSERT WISH
     function insert_wish($userID, $description, $duedate) 
     {
@@ -182,12 +304,6 @@ class UserDB extends mysqli
                     "', due_date = '" . $this->format_date_for_sql($duedate)
                     . "' WHERE id = " . $wID);
         }
-    }
-
-    //*******TODO**********GET WISH BY ID
-    public function get_wish_by_wish_id($wishID) 
-    {
-        return $this->query("SELECT id, description, due_date FROM wishes WHERE id = " . $wishID);
     }
 
     //*******TODO**********DELETE WISH

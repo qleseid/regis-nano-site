@@ -4,12 +4,13 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/var/www/html/NanoSite/boxview.php</file>
+            <file>file:/var/www/html/NanoSite/Includes/funDa.php</file>
             <file>file:/var/www/html/NanoSite/Includes/jsFuncs.js</file>
-            <file>file:/var/www/html/NanoSite/createNewUser.php</file>
             <file>file:/var/www/html/NanoSite/home.php</file>
             <file>file:/var/www/html/NanoSite/css/boxview.css</file>
             <file>file:/var/www/html/NanoSite/login.php</file>
             <file>file:/var/www/html/NanoSite/boxes.php</file>
+            <file>file:/var/www/html/NanoSite/newItem.php</file>
         </group>
     </open-files>
 </project-private>
