@@ -121,7 +121,7 @@ function post(action, name, elemt)
     {
         //document.getElementById("titleArea").value = "In Post!";
         const form = document.createElement('form');
-        var fields = ['titleArea', 'textArea', 'cmd', 'id'];
+        var fields = ['titleArea', 'textArea', 'cmd', 'id', 'owner'];
         form.method = 'POST';
         form.action = action;
 

@@ -29,58 +29,101 @@ if($_SESSION['cmd'])
 
 navHeader('locations');
 
-?>
+echo <<<_END
 <html>
     <head>
         <meta charset="UTF-8" />
         <link rel="stylesheet" type="text/css" href="css/boxview.css" />
     </head>
     <body>
-
         <header class="SiteHeader">
             <div class="hd-container">
                 <div class="col-rt-12">
                     <div class="hd-heading">
                         <h1>Storage Box: <h2>Locations</h2></h1>
                         <menu>
-                            <?php navBuild('locations.php'); ?>
+_END;
+                            navBuild('locations.php');
+echo <<<_END
                         </menu>
                     </div>
                 </div>
             </div>
         </header>
+_END;
+
+    $locations = (UserDB::getInstance()->
+            get_items_by_owner($_SESSION['userId'],'locations'));
+    if (!$locations) {die ("Database access failed");}
+    
+    $id;
+    $owner;
+    $title;
+    $filePath;
+    $description;
+    //echo("PHP MARKER");
+    if($locations->num_rows > 0)
+    {
+        $row = $locations->fetch_row();
+        $id = $row[0];
+        $owner = $row[1];
+        $title = htmlspecialchars($row[2]);
+        $filePath = $row[3];
+        $description = htmlspecialchars($row[4]);
+        
+        //Reset result to beginning
+        $locations->data_seek(0);
+        //echo("PHP MARKER WITH ROWS");
+    }
+    else
+    {
+        $id = 0;
+        $owner = $_SESSION['userId'];
+        $title = "NOTHING CREATED YET, CLICK 'NEW' ABOVE";
+        $filePath = "/home/gangsta/Pictures/uploads/empty.jpg";
+        $description = "NO ITEMS, NO DESCRIPTIONS YET, CLICK 'NEW' ABOVE";
+    }
+    //echo("PHP MARKER END OF IF");
+echo <<<_END
         <div class="dividLine"/>
-        <textarea id="titleArea">
- This is where the Location Title will go!   
-        </textarea>
-        <input type="hidden" id="id" value="4"/>
+        <textarea id="titleArea">$title</textarea>
+        <input type="hidden" id="id" value="$id"/>
+        <input type="hidden" id="owner" value="$owner"/>
         <div>
             <div class="pos">
-
                 <div class="bin">
-                    <div class="big" onclick="<?php $_SESSION['id'] = 4 ?>;javascript:nav('boxes.php')">
-                        <img class="sel" id="selectedImage" src="image/location.jpeg">
+                    <div class='big' onclick="javascript:nav('boxes.php')
+_END;
+            $_SESSION['loca'] = $id; 
+            echo"\">";
+            echo '<img class="sel" id="selectedImage" src="'
+                . base64_encode_image($filePath).'"/>';
+            
+echo <<<_END
                     </div>
 
                 </div>
 
             </div>
 
-            <textarea id="textArea" class="pos">
-This is where the text description for the storage location. You would go into greater detail of the pictured box and the storage location and you can also search these words later to find things. This area is big enough for some serious typing.
-            </textarea>
+            <textarea id="textArea" class="pos">$description</textarea>
         </div>
         <div class="dividLine"/>
         <section> <!--------------- TODO ------------------------- 
                   THIS WILL BE BUILT BY PHP, ONLY EXAMPLE CURRENTLY -->
             <div class="rt-container">
                 <div class="horizontalScroll">
-                    <div class="item" onclick="javascript:selectImage('image/location.jpeg')">
-                        <div class="bg">
-                            <img src="image/location.jpeg">
-                        </div>
-                    </div>
-                    <div class="item" onclick="javascript:selectImage('image/location1.jpeg')">
+_END;
+   
+   while($row = $locations->fetch_row())
+   {
+        echo"<div class='item' onclick=\"javascript:selectImage('$row')\">";
+        echo'<div class="bg">';
+        echo '<img src="'. base64_encode_image($row[3]).'"/>';
+        echo "</div></div>";  
+   }                        
+                            /*
+                                                 <div class="item" onclick="javascript:selectImage('image/location1.jpeg')">
                         <div class="bg">
                             <img src="image/location1.jpeg">
                         </div>
@@ -104,10 +147,14 @@ This is where the text description for the storage location. You would go into g
                         <div class="bg">
                             <img src="image/location5.jpeg" onclick="javascript:selectImage('image/location5.jpeg')">
                         </div>
-                    </div>                    
+                    </div>*/
+echo <<<_END
                 </div>
             </div>
         </section>
         <script src="Includes/jsFuncs.js"></script>
     </body>
 </html>
+_END;
+
+?>

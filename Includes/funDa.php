@@ -50,6 +50,7 @@ function popSess($cmd, $page)
     $_SESSION['cmd']   = $cmd;
     $_SESSION['page']   = $page;
     $_SESSION['id']    = filter_input(INPUT_POST, 'id');
+    $_SESSION['owner']    = filter_input(INPUT_POST, 'owner');
     $_SESSION['titleArea'] = filter_input(INPUT_POST, 'titleArea');
     $_SESSION['textArea']  = filter_input(INPUT_POST, 'textArea');
 }
@@ -68,6 +69,18 @@ echo <<<_END
     <li onclick="javascript:post('$currPage', 'logout', 'input')">Logout</li>
 _END;
 
+}
+
+function base64_encode_image($file) 
+{
+    $filetype = filetype(basename($file));
+    if ($file) 
+    {
+        return 'data:image/' 
+                . $filetype 
+                . ';base64,' 
+                . base64_encode(fread(fopen($file, "r"), filesize($file)));
+    }
 }
 
 class UserDB extends mysqli 
@@ -231,6 +244,14 @@ class UserDB extends mysqli
         }  
         return $result;        
     }
+
+    //GET ITEMS BY OWNER
+    public function get_items_by_owner($ownerID, $page) 
+    {
+        $oid = $this->real_escape_string($ownerID);
+        $pg = $this->real_escape_string($page);
+        return $this->query("SELECT * FROM ".$pg." WHERE owner_id = " . $oid);
+    }
     
     //*******TODO**********INSERT WISH
     function insert_wish($userID, $description, $duedate) 
@@ -283,12 +304,6 @@ class UserDB extends mysqli
                     "', due_date = '" . $this->format_date_for_sql($duedate)
                     . "' WHERE id = " . $wID);
         }
-    }
-
-    //*******TODO**********GET WISH BY ID
-    public function get_wish_by_wish_id($wishID) 
-    {
-        return $this->query("SELECT id, description, due_date FROM wishes WHERE id = " . $wishID);
     }
 
     //*******TODO**********DELETE WISH
