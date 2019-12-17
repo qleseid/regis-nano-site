@@ -223,21 +223,22 @@ class UserDB extends mysqli
                 //$targetDir = "/media/gangsta/CEA43582A4356E59/Folder/uploads/";
                 $fileName = basename($_FILES["item"]["name"]);
                 $targetFilePath = $targetDir . date(DATE_ATOM,mktime()) . $fileName ;                        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
-                $allowTypes = array('jpg','png','jpeg','gif','pdf', 'webp');
+                $allowTypes = array('jpg','png','jpeg','gif','pdf', 'webp',
+                    'JPG','PNG','JPEG','GIF','PDF', 'WEBP');
                 //echo"BEFORE TYPE CHECK:</br>" . $targetFilePath . "</BR>";
                 if(in_array($fileType, $allowTypes))
                 {
                     //echo"CORRECT FILE TYPE</br>";
                     if(move_uploaded_file($_FILES["item"]["tmp_name"], $targetFilePath))
                     {
-                        //echo"BEFORE QUERY</br>";
+                        /*echo"BEFORE QUERY</br>";
                         echo"INSERT INTO ".$page." VALUES "
                             . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
-                            . $targetFilePath . "','" . $teA . "')";
+                            . $targetFilePath . "','" . $teA . "')";*/
                         $result = $this->query("INSERT INTO ".$page." VALUES "
                             . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
                             . $targetFilePath . "','" . $teA . "')");
-                        echo"MOVE IMAGE SUCCESS</br>";
+                        echo"MOVE IMAGE SUCCESS</br>" . $result;
                     }
                 }                    
             }                

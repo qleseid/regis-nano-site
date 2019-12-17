@@ -97,57 +97,28 @@ _END;
             $_SESSION['loca'] = $id; 
             echo"\">";
             echo '<img class="sel" id="selectedImage" src="'
-                . base64_encode_image($filePath).'"/>';
-            
+                . base64_encode_image($filePath).'"/>';            
 echo <<<_END
                     </div>
-
                 </div>
-
             </div>
-
             <textarea id="textArea" class="pos">$description</textarea>
         </div>
         <div class="dividLine"/>
-        <section> <!--------------- TODO ------------------------- 
-                  THIS WILL BE BUILT BY PHP, ONLY EXAMPLE CURRENTLY -->
+        <section>
             <div class="rt-container">
                 <div class="horizontalScroll">
 _END;
    
    while($row = $locations->fetch_row())
    {
-        echo"<div class='item' onclick=\"javascript:selectImage('$row')\">";
+        echo"<div class='item' onclick=\"javascript:selectImage('".$row[0]."', "
+                . "'".$row[1]."', '".htmlspecialchars($row[2])."',"
+                . "'".base64_encode_image($row[3])."', '".htmlspecialchars($row[4])."')\">";
         echo'<div class="bg">';
         echo '<img src="'. base64_encode_image($row[3]).'"/>';
         echo "</div></div>";  
-   }                        
-                            /*
-                                                 <div class="item" onclick="javascript:selectImage('image/location1.jpeg')">
-                        <div class="bg">
-                            <img src="image/location1.jpeg">
-                        </div>
-                    </div>
-                    <div class="item" onclick="javascript:selectImage('image/location2.jpeg')">
-                        <div class="bg">
-                            <img src="image/location2.jpeg">
-                        </div>
-                    </div>
-                    <div class="item" onclick="javascript:selectImage('image/location3.jpeg')">
-                        <div class="bg">
-                            <img src="image/location3.jpeg">
-                        </div>
-                    </div>
-                    <div class="item" onclick="javascript:selectImage('image/location4.jpeg')">
-                        <div class="bg">
-                            <img src="image/location4.jpeg">
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="bg">
-                            <img src="image/location5.jpeg" onclick="javascript:selectImage('image/location5.jpeg')">
-                        </div>
-                    </div>*/
+   }
 echo <<<_END
                 </div>
             </div>

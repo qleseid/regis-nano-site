@@ -14,27 +14,25 @@ require_once("Includes/funDa.php");
 session_start();
 
 echo  $_SESSION['id'];
+echo  $_SESSION['owner'];
 $goodCreate = false;
 //******************** TODO ****************
 // Create a new item
 if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST") 
-{
-    $pageId = $_SESSION['page'] === 'locations'? $_SESSION['userId'] :
-        $_SESSION['id'];
-    
+{    
     $goodCreate = (UserDB::getInstance()->create_item(
             $_SESSION['page'],
-            $pageId, 
+            $_SESSION['owner'], 
             filter_input(INPUT_POST, 'titleArea'),
             filter_input(INPUT_POST, 'textArea')));
-    if ($goodCreate == true) 
+    if ($goodCreate) 
     {
         header('Location:'. $_SESSION['page'].'.php');
         exit;
     }
     else
     {
-        echo("UPDATE FAILURE!");
+        echo("UPDATE FAILURE!". $_SESSION['page'] . $_SESSION['owner']);
     }
 }
 ?>

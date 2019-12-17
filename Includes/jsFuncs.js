@@ -105,9 +105,13 @@ function checkUserMess()
 }
 
 //HOME SELECT IMAGE
-function selectImage(image)
-{
+function selectImage(id, owner, title, image, des)
+{    
     document.getElementById("selectedImage").src = image;
+    document.getElementById("titleArea").value = title;
+    document.getElementById("id").value = id;
+    document.getElementById("owner").value = owner;
+    document.getElementById("textArea").value = des;
 }
 
 //NAVIGATION TO NEXT PAGE
