@@ -13,8 +13,12 @@
 require_once("Includes/funDa.php");
 session_start();
 
-echo  $_SESSION['id'];
-echo  $_SESSION['owner'];
+    echo $_SESSION['id'] . ": ID</br>";
+    echo $_SESSION['owner'] . ": OWNER</br>";
+    echo $_SESSION['userId'] . ": USERID</br>";
+    echo $_SESSION['cmd'] . ": CMD</br>";
+    echo $_SESSION['page'] . ": PAGE</br>";
+
 $goodCreate = false;
 //******************** TODO ****************
 // Create a new item

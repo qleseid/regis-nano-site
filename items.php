@@ -20,8 +20,15 @@ if(!$_SESSION['user'])
     header('Location: login.php');
     exit;
 }
-
+/*
+    echo $_SESSION['id'] . ": ID</br>";
+    echo $_SESSION['owner'] . ": OWNER</br>";
+    echo $_SESSION['userId'] . ": USERID</br>";
+    echo $_SESSION['cmd'] . ": CMD</br>";
+    echo $_SESSION['page'] . ": PAGE</br>";
+*/
 navHeader('items');
+//$_SESSION['$page'] = 'items';
 
 echo <<<_END
 <html>
@@ -47,7 +54,7 @@ echo <<<_END
 _END;
 
     $item = (UserDB::getInstance()->
-            get_items_by_owner($_SESSION['box'],'items'));
+            get_items_by_owner($_SESSION['owner'],'items'));
     if (!$item) {die ("Database access failed");}
     
     $id;
@@ -72,7 +79,7 @@ _END;
     else
     {
         $id = 0;
-        $owner = $_SESSION['box'];
+        $owner = $_SESSION['owner'];
         $title = "NOTHING CREATED YET, CLICK 'NEW' ABOVE";
         $filePath = "/home/gangsta/Pictures/uploads/empty.jpg";
         $description = "NO ITEMS, NO DESCRIPTIONS YET, CLICK 'NEW' ABOVE";
@@ -104,9 +111,13 @@ _END;
    
    while($row = $item->fetch_row())
    {
-        echo"<div class='item' onclick=\"javascript:selectImage('$row')\">";
+        $row[3] = base64_encode_image($row[3]);
+        
+        echo"<div class='item' onclick=\"javascript:selectImage('".$row[0]."', "
+                . "'".$row[1]."', '".addslashes($row[2])."',"
+                . "'".$row[3]."', '".addslashes($row[4])."')\">";
         echo'<div class="bg">';
-        echo '<img src="'. base64_encode_image($row[3]).'"/>';
+        echo '<img src="'. $row[3].'"/>';
         echo "</div></div>";  
    }
 echo <<<_END

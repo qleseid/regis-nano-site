@@ -31,7 +31,7 @@ function navHeader($page)
             case 'account':
                 popSess('account', $page);
                 header('Location: account.php');
-                exit;
+                exit; 
             case 'logout':
                 session_unset();
                 setcookie('','',1);
@@ -43,6 +43,24 @@ function navHeader($page)
                 exit;
         }
     }
+    else if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "GET")
+    {    
+        if(filter_input(INPUT_GET, 'cmd') == 'selectedImage')
+        {
+            $_SESSION['cmd']   = '';
+            $_SESSION['page']   = $page;
+            $_SESSION['owner'] = filter_input(INPUT_GET, 'id');
+            header('Location: '.$_SESSION['next']);
+            exit;
+        }
+        else if($_SESSION['page'] != $page)
+        {
+            //UserDB::getInstance()->get_owner_of_id($_SESSION['owner'], $page);
+            //$_SESSION['page']   = $page;
+        }
+           
+    }
+        
 }
 
 function popSess($cmd, $page)
@@ -59,14 +77,14 @@ function navBuild($currPage)
 {
     if($currPage !== 'locations.php')
     {
-        echo ("<li onclick=\"javascript:post('$currPage', 'home', 'input')\">Home</li>");
+        echo ("<li onclick=\"javascript:post('$currPage', 'home')\">Home</li>");
     }
 echo <<<_END
-    <li onclick="javascript:post('$currPage', 'account', 'input')">Account</li>
-    <li onclick="javascript:post('$currPage', 'new', 'input')">New</li>
-    <li onclick="javascript:post('$currPage', 'update', 'input')">Update</li>
-    <li onclick="javascript:post('$currPage', 'delete', 'input')">Delete</li>
-    <li onclick="javascript:post('$currPage', 'logout', 'input')">Logout</li>
+    <li onclick="javascript:post('$currPage', 'account')">Account</li>
+    <li onclick="javascript:post('$currPage', 'new')">New</li>
+    <li onclick="javascript:post('$currPage', 'update')">Update</li>
+    <li onclick="javascript:post('$currPage', 'delete')">Delete</li>
+    <li onclick="javascript:post('$currPage', 'logout')">Logout</li>
 _END;
 
 }
@@ -201,6 +219,7 @@ class UserDB extends mysqli
         $result = $this->query("SELECT password, id FROM users
  	           WHERE name = '" . $nam . "'")->fetch_array(MYSQLI_NUM);
         $_SESSION['userId'] = $result[1];
+        $_SESSION['cmd'] = 'login';
         
         return (password_verify($pword, $result[0]));
     }
@@ -252,6 +271,16 @@ class UserDB extends mysqli
         $oid = $this->real_escape_string($ownerID);
         $pg = $this->real_escape_string($page);
         return $this->query("SELECT * FROM ".$pg." WHERE owner_id = " . $oid);
+    }
+
+    //GET OWNER OF ID
+    public function get_owner_of_id($id, $page) 
+    {
+        $oid = $this->real_escape_string($id);
+        $pg = $this->real_escape_string($page);
+        $result = $this->query("SELECT owner_id FROM ".$pg." WHERE id = " . $oid)
+                ->fetch_array(MYSQLI_NUM);
+        $_SESSION['owner'] = $result[0];
     }
     
     //*******TODO**********INSERT WISH

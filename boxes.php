@@ -20,8 +20,15 @@ if(!$_SESSION['user'])
     header('Location: login.php');
     exit;
 }
-
+/*
+    echo $_SESSION['id'] . ": ID</br>";
+    echo $_SESSION['owner'] . ": OWNER</br>";
+    echo $_SESSION['userId'] . ": USERID</br>";
+    echo $_SESSION['cmd'] . ": CMD</br>";
+    echo $_SESSION['page'] . ": PAGE</br>";
+*/
 navHeader('boxes');
+//$_SESSION['$page'] = 'boxes';
 
 echo <<<_END
 <html>
@@ -48,7 +55,7 @@ echo <<<_END
 _END;
 
     $boxes = (UserDB::getInstance()->
-            get_items_by_owner($_SESSION['loca'],'boxes'));
+            get_items_by_owner($_SESSION['owner'],'boxes'));
     if (!$boxes) {die ("Database access failed");}
     
     $id;
@@ -73,7 +80,7 @@ _END;
     else
     {
         $id = 0;
-        $owner = $_SESSION['loca'];
+        $owner = $_SESSION['owner'];
         $title = "NOTHING CREATED YET, CLICK 'NEW' ABOVE";
         $filePath = "/home/gangsta/Pictures/uploads/empty.jpg";
         $description = "NO ITEMS, NO DESCRIPTIONS YET, CLICK 'NEW' ABOVE";
@@ -87,9 +94,9 @@ echo <<<_END
         <div>
             <div class="pos">
                 <div class="bin">
-                    <div class='big' onclick="javascript:nav('items.php')
+                    <div class='big' onclick="javascript:nav('boxes.php')
 _END;
-            $_SESSION['box'] = $id; 
+            $_SESSION['next'] = 'items.php'; 
             echo"\">";
             echo '<img class="sel" id="selectedImage" src="'
                 . base64_encode_image($filePath).'"/>';
@@ -106,12 +113,16 @@ echo <<<_END
 _END;
 
     while($row = $boxes->fetch_row())
-    {
-        echo"<div class='item' onclick=\"javascript:selectImage('$row')\">";
+   {
+        $row[3] = base64_encode_image($row[3]);
+        
+        echo"<div class='item' onclick=\"javascript:selectImage('".$row[0]."', "
+                . "'".$row[1]."', '".addslashes($row[2])."',"
+                . "'".$row[3]."', '".addslashes($row[4])."')\">";
         echo'<div class="bg">';
-        echo '<img src="'. base64_encode_image($row[3]).'"/>';
+        echo '<img src="'. $row[3].'"/>';
         echo "</div></div>";  
-    }    
+   }    
 echo <<<_END
                 </div>
             </div>

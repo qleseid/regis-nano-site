@@ -20,14 +20,19 @@ if(!$_SESSION['user'])
     header('Location: login.php');
     exit;
 }
-
+/*
 //Input debug info
 if($_SESSION['cmd'])
 {
-    //echo ("HOME: " .$_SESSION['cmd']);
+    echo $_SESSION['id'] . ": ID</br>";
+    echo $_SESSION['owner'] . ": OWNER</br>";
+    echo $_SESSION['userId'] . ": USERID</br>";
+    echo $_SESSION['cmd'] . ": CMD</br>";
+    echo $_SESSION['page'] . ": PAGE</br>";
 }
-
+*/
 navHeader('locations');
+//$_SESSION['$page'] = 'locations';
 
 echo <<<_END
 <html>
@@ -92,9 +97,9 @@ echo <<<_END
         <div>
             <div class="pos">
                 <div class="bin">
-                    <div class='big' onclick="javascript:nav('boxes.php')
+                    <div class='big' onclick="javascript:nav('locations.php')
 _END;
-            $_SESSION['loca'] = $id; 
+            $_SESSION['next'] = 'boxes.php'; 
             echo"\">";
             echo '<img class="sel" id="selectedImage" src="'
                 . base64_encode_image($filePath).'"/>';            
@@ -112,11 +117,13 @@ _END;
    
    while($row = $locations->fetch_row())
    {
+        $row[3] = base64_encode_image($row[3]);
+        
         echo"<div class='item' onclick=\"javascript:selectImage('".$row[0]."', "
-                . "'".$row[1]."', '".htmlspecialchars($row[2])."',"
-                . "'".base64_encode_image($row[3])."', '".htmlspecialchars($row[4])."')\">";
+                . "'".$row[1]."', '".addslashes($row[2])."',"
+                . "'".$row[3]."', '".addslashes($row[4])."')\">";
         echo'<div class="bg">';
-        echo '<img src="'. base64_encode_image($row[3]).'"/>';
+        echo '<img src="'. $row[3].'"/>';
         echo "</div></div>";  
    }
 echo <<<_END
