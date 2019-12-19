@@ -219,7 +219,7 @@ class UserDB extends mysqli
         $result = $this->query("SELECT password, id FROM users
  	           WHERE name = '" . $nam . "'")->fetch_array(MYSQLI_NUM);
         $_SESSION['userId'] = $result[1];
-        $_SESSION['cmd'] = 'login';
+        //$_SESSION['cmd'] = 'login';
         
         return (password_verify($pword, $result[0]));
     }
@@ -265,6 +265,53 @@ class UserDB extends mysqli
         return $result;        
     }
 
+    //UPDATE ITEM
+    public function update_item($page, $pageId, $titleArea, $textArea)
+    {
+        //echo"IN CREATE ITEM</br>";
+        $tiA = $this->real_escape_string($titleArea);
+        $teA = $this->real_escape_string($textArea);
+        $result = false;
+        
+        if (count($_FILES) > 0)
+        {
+            //echo"IS A FILE</br>";
+            if (is_uploaded_file($_FILES['item']['tmp_name']))
+            {
+                //echo"THE FILE IS UPLOADED</br>";
+                $targetDir = "/home/gangsta/Pictures/uploads/";
+                //$targetDir = "/media/gangsta/CEA43582A4356E59/Folder/uploads/";
+                $fileName = basename($_FILES["item"]["name"]);
+                $targetFilePath = $targetDir . date(DATE_ATOM,mktime()) . $fileName ;                        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+                $allowTypes = array('jpg','png','jpeg','gif','pdf', 'webp',
+                    'JPG','PNG','JPEG','GIF','PDF', 'WEBP');
+                //echo"BEFORE TYPE CHECK:</br>" . $targetFilePath . "</BR>";
+                if(in_array($fileType, $allowTypes))
+                {
+                    //echo"CORRECT FILE TYPE</br>";
+                    if(move_uploaded_file($_FILES["item"]["tmp_name"], $targetFilePath))
+                    {
+                        /*echo"BEFORE QUERY</br>";
+                        echo"INSERT INTO ".$page." VALUES "
+                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
+                            . $targetFilePath . "','" . $teA . "')";*/
+                        $result = $this->query("INSERT INTO ".$page." VALUES "
+                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
+                            . $targetFilePath . "','" . $teA . "')");
+                        echo"MOVE IMAGE SUCCESS</br>" . $result;
+                    }
+                }                    
+            }                
+        }  
+        return $result;        
+    }
+
+    //DELETE ITEM
+    public function delete_item($page)
+    {
+        $this->query("DELETE FROM ".$page." WHERE id=".$_SESSION['owner']);       
+    }
+
     //GET ITEMS BY OWNER
     public function get_items_by_owner($ownerID, $page) 
     {
@@ -281,66 +328,6 @@ class UserDB extends mysqli
         $result = $this->query("SELECT owner_id FROM ".$pg." WHERE id = " . $oid)
                 ->fetch_array(MYSQLI_NUM);
         $_SESSION['owner'] = $result[0];
-    }
-    
-    //*******TODO**********INSERT WISH
-    function insert_wish($userID, $description, $duedate) 
-    {
-        $descript = $this->real_escape_string($description);
-        $wID = $this->real_escape_string($userID);
-        $dDate = $this->real_escape_string($duedate);
-        
-        if ($this->format_date_for_sql($dDate) == null) {
-            $this->query("INSERT INTO wishes (user_id, description)" .
-                    " VALUES (" . $wID . ", '" . $descript . "')");
-        } 
-        else 
-        {
-            $this->query("INSERT INTO wishes (user_id, description, due_date)" .
-                    " VALUES (" . $wID . ", '" . $descript . "', "
-                    . $this->format_date_for_sql($dDate) . ")");
-        }
-    }
-
-    //*******TODO**********DATE FORMAT
-    function format_date_for_sql($date) 
-    {
-        if ($date == "")
-        {
-            return null;
-        }
-        else
-        {
-            $dateParts = date_parse($date);
-            return $dateParts["year"] * 10000 + $dateParts["month"] * 100 + $dateParts["day"];
-        }
-    }
-
-    //*******TODO**********UPDATE ITEM
-    public function update_wish($wishID, $description, $duedate)
-    {
-        $descript = $this->real_escape_string($description);
-        $dDate = $this->real_escape_string($duedate);
-        $wID = $wishID;
-        
-        if ($dDate == '') 
-        {
-            $this->query("UPDATE wishes SET description = '" . $descript . "',
-             due_date = NULL WHERE id = " . $wID);
-        } 
-        else 
-        {
-            $this->query("UPDATE wishes SET description = '" . $descript .
-                    "', due_date = '" . $this->format_date_for_sql($duedate)
-                    . "' WHERE id = " . $wID);
-        }
-    }
-
-    //*******TODO**********DELETE WISH
-    function delete_wish($wishID) 
-    {
-        $this->query("DELETE FROM wishes WHERE id = " . $wishID);
-    }
-
+    }      
 }
 ?>

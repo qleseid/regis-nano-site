@@ -24,11 +24,8 @@ $goodCreate = false;
 // Create a new item
 if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST") 
 {    
-    $goodCreate = (UserDB::getInstance()->create_item(
-            $_SESSION['page'],
-            $_SESSION['owner'], 
-            filter_input(INPUT_POST, 'titleArea'),
-            filter_input(INPUT_POST, 'textArea')));
+    $goodCreate = (UserDB::getInstance()->delete_item(
+            $_SESSION['page']));
     if ($goodCreate) 
     {
         header('Location:'. $_SESSION['page'].'.php');
@@ -44,24 +41,24 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
      <head>
          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
          <link href="css/new.css" type="text/css" rel="stylesheet" media="all" />
-         <title>New</title>
+         <title>Delete</title>
      </head>
      <body>   
          <div class="body">
              <div class="newItem">
-                 <form name="new" action="new.php" method="POST" 
+                 <form name="delete" action="delete.php" method="POST" 
                        enctype='multipart/form-data'>
                      Title </br><textarea id="titleArea" name="titleArea"
-                                          required/></textarea></br>
+                                          /><?php echo ($_SESSION['titleArea']); ?></textarea></br>
                      <div class="error" id="divUserMess"></div>
                      Description </br><textarea id="textArea" name="textArea"/>
-                     </textarea></br>
+                     <?php echo ($_SESSION['textArea']); ?></textarea></br>
                      <input type="file" name="item" size="30"
                             accept=".png, .gif, .jpg, .jpeg, .webp"
                             onchange="document.getElementById('preview').src =
                                         window.URL.createObjectURL(this.files[0])"
                             required></br>
-                     <input type="submit" id="createBtn" value="Create">
+                     <input type="submit" id="createBtn" value="Delete">
                  </form>
                  <form name="cancelAccount" action="
                      <?php echo $_SESSION['page'].".php"?>" 
