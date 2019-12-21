@@ -69,7 +69,7 @@ _END;
         $id = $row[0];
         $owner = $row[1];
         $title = htmlspecialchars($row[2]);
-        $filePath = $row[3];
+        $_SESSION['filePath'] = $filePath = $row[3];
         $description = htmlspecialchars($row[4]);
         
         //Reset result to beginning
@@ -89,6 +89,7 @@ echo <<<_END
         <div class="dividLine"/>
         <textarea id="titleArea">$title</textarea>
         <input type="hidden" id="id" value="$id"/>
+        <input type="hidden" id="file" value="$filePath"/>
         <input type="hidden" id="owner" value="$owner"/>
         <div>
             <div class="pos">
@@ -111,14 +112,14 @@ _END;
    
    while($row = $item->fetch_row())
    {
-        $row[3] = base64_encode_image($row[3]);
+        $image = base64_encode_image($row[3]);
         
         echo"<div class='item' onclick=\"javascript:selectImage('".$row[0]."', "
                 . "'".$row[1]."', '".addslashes($row[2])."',"
-                . "'".$row[3]."', '".addslashes($row[4])."')\">";
+                . "'".$image."', '".addslashes($row[4])."', '".$row[3]."')\">";
         echo'<div class="bg">';
-        echo '<img src="'. $row[3].'"/>';
-        echo "</div></div>";  
+        echo '<img src="'. $image .'"/>';
+        echo "</div></div>";   
    }
 echo <<<_END
                 </div>

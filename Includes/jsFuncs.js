@@ -105,12 +105,13 @@ function checkUserMess()
 }
 
 //HOME SELECT IMAGE
-function selectImage(id, owner, title, image, des)
+function selectImage(id, owner, title, image, des, file)
 {    
     document.getElementById("selectedImage").src = image;
     document.getElementById("titleArea").value = title;
     document.getElementById("id").value = id;
     document.getElementById("owner").value = owner;
+    document.getElementById("file").value = file;
     document.getElementById("textArea").value = des;
 }
 
@@ -129,7 +130,7 @@ function post(action, name, meth='POST', elemt='input')
     {
         //document.getElementById("titleArea").value = "In Post!";
         const form = document.createElement('form');
-        var fields = ['titleArea', 'textArea', 'cmd', 'id', 'owner'];
+        var fields = ['titleArea', 'textArea', 'cmd', 'id', 'owner', 'file'];
         form.method = meth;
         form.action = action;
 

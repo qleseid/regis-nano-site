@@ -47,8 +47,9 @@ function navHeader($page)
     {    
         if(filter_input(INPUT_GET, 'cmd') == 'selectedImage')
         {
-            $_SESSION['cmd']   = '';
-            $_SESSION['page']   = $page;
+            $_SESSION['cmd'] = '';
+            $_SESSION['page'] = $page;
+            $_SESSION['file'] = filter_input(INPUT_GET, 'file');
             $_SESSION['owner'] = filter_input(INPUT_GET, 'id');
             header('Location: '.$_SESSION['next']);
             exit;
@@ -69,6 +70,7 @@ function popSess($cmd, $page)
     $_SESSION['page']   = $page;
     $_SESSION['id']    = filter_input(INPUT_POST, 'id');
     $_SESSION['owner']    = filter_input(INPUT_POST, 'owner');
+    $_SESSION['file']    = filter_input(INPUT_POST, 'file');
     $_SESSION['titleArea'] = filter_input(INPUT_POST, 'titleArea');
     $_SESSION['textArea']  = filter_input(INPUT_POST, 'textArea');
 }
@@ -309,7 +311,9 @@ class UserDB extends mysqli
     //DELETE ITEM
     public function delete_item($page)
     {
-        $this->query("DELETE FROM ".$page." WHERE id=".$_SESSION['owner']);       
+        //Delete the server stored file
+        unlink($_SESSION['filePath']);
+        return $this->query("DELETE FROM ".$page." WHERE id=".$this->real_escape_string($_SESSION['id']));
     }
 
     //GET ITEMS BY OWNER

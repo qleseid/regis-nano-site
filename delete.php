@@ -53,11 +53,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
                      <div class="error" id="divUserMess"></div>
                      Description </br><textarea id="textArea" name="textArea"/>
                      <?php echo ($_SESSION['textArea']); ?></textarea></br>
-                     <input type="file" name="item" size="30"
-                            accept=".png, .gif, .jpg, .jpeg, .webp"
-                            onchange="document.getElementById('preview').src =
-                                        window.URL.createObjectURL(this.files[0])"
-                            required></br>
+                     
                      <input type="submit" id="createBtn" value="Delete">
                  </form>
                  <form name="cancelAccount" action="
