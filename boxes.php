@@ -55,7 +55,7 @@ echo <<<_END
 _END;
 
     $boxes = (UserDB::getInstance()->
-            get_items_by_owner($_SESSION['owner'],'boxes'));
+            get_items_by_owner($_SESSION['locations'],'boxes'));
     if (!$boxes) {die ("Database access failed");}
     
     $id;
