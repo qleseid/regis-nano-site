@@ -59,8 +59,8 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
                      <input type="file" name="item" size="30"
                             accept=".png, .gif, .jpg, .jpeg, .webp"
                             onchange="document.getElementById('preview').src =
-                                        window.URL.createObjectURL(this.files[0])"
-                            required></br>
+                             window.URL.createObjectURL(this.files[0])"
+                   required></br>
                      <input type="submit" id="createBtn" value="Create">
                  </form>
                  <form name="cancelAccount" action="

@@ -92,6 +92,7 @@ _END;
 
 }
 
+//Encodes image for movement between server and client
 function base64_encode_image($file) 
 {
     $filetype = filetype(basename($file));
@@ -104,6 +105,7 @@ function base64_encode_image($file)
     }
 }
 
+//USERDB CLASS
 class UserDB extends mysqli 
 {
     // single instance of self shared among all instances
@@ -230,11 +232,53 @@ class UserDB extends mysqli
     //CREATE ITEM
     public function create_item($page, $pageId, $titleArea, $textArea)
     {
+        //echo"IN CREATE ITEM</br>";
+        $tiA = $this->real_escape_string($titleArea);
+        $teA = $this->real_escape_string($textArea);
+        $result = false;
+        //echo"IN CREATE, ABOUT TO CHECK IF IT HAS A FILE</br>";
+        if (count($_FILES) > 0)
+        {
+            //echo"IS A FILE</br>";
+            if (is_uploaded_file($_FILES['item']['tmp_name']))
+            {
+                //echo"THE FILE IS UPLOADED</br>";
+                $targetDir = "/home/gangsta/Pictures/uploads/";
+                //$targetDir = "/media/gangsta/CEA43582A4356E59/Folder/uploads/";
+                $fileName = basename($_FILES["item"]["name"]);
+                $targetFilePath = $targetDir . date(DATE_ATOM,mktime()) . $fileName ;                        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+                $allowTypes = array('jpg','png','jpeg','gif','pdf', 'webp',
+                    'JPG','PNG','JPEG','GIF','PDF', 'WEBP');
+                //echo"BEFORE TYPE CHECK:</br>" . $targetFilePath . "</BR>";
+                if(in_array($fileType, $allowTypes))
+                {
+                    //echo"CORRECT FILE TYPE</br>";
+                    if(move_uploaded_file($_FILES["item"]["tmp_name"], $targetFilePath))
+                    {
+                        //echo"BEFORE QUERY</br>";
+                        /*echo"INSERT INTO ".$page." VALUES "
+                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
+                            . $targetFilePath . "','" . $teA . "')";*/
+                        $result = $this->query("INSERT INTO ".$page." VALUES "
+                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
+                            . $targetFilePath . "','" . $teA . "')");
+                        //echo"MOVE IMAGE SUCCESS</br>" . $result;
+                    }
+                }                    
+            }                
+        }            
+        echo "ERROR: ". $_FILES['item']['error'];        
+        return $result;        
+    }
+
+    //UPDATE ITEM
+    public function update_item($page, $pageId, $titleArea, $textArea)
+    {
         echo"IN CREATE ITEM</br>";
         $tiA = $this->real_escape_string($titleArea);
         $teA = $this->real_escape_string($textArea);
         $result = false;
-        echo"IN CREATE, ABOUT TO CHECK IF IT HAS A FILE</br>";
+        
         if (count($_FILES) > 0)
         {
             echo"IS A FILE</br>";
@@ -254,58 +298,26 @@ class UserDB extends mysqli
                     if(move_uploaded_file($_FILES["item"]["tmp_name"], $targetFilePath))
                     {
                         echo"BEFORE QUERY</br>";
-                        echo"INSERT INTO ".$page." VALUES "
-                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
-                            . $targetFilePath . "','" . $teA . "')";
-                        $result = $this->query("INSERT INTO ".$page." VALUES "
-                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
-                            . $targetFilePath . "','" . $teA . "')");
+                        echo"UPDATE ".$page." SET title = '".$tiA.
+                        "', description = '".$teA."', filePath = '".$targetFilePath.
+                                "' WHERE id = '".$pageId."'";
+                        $result = $this->query("UPDATE ".$page." SET title = '".$tiA.
+                        "', description = '".$teA."', filePath = '".$targetFilePath.
+                                "' WHERE id = '".$pageId."'");
+                        unlink($_SESSION['file']);
                         echo"MOVE IMAGE SUCCESS</br>" . $result;
                     }
                 }                    
-            }                
-        }  
-        return $result;        
-    }
-
-    //UPDATE ITEM
-    public function update_item($page, $pageId, $titleArea, $textArea)
-    {
-        //echo"IN CREATE ITEM</br>";
-        $tiA = $this->real_escape_string($titleArea);
-        $teA = $this->real_escape_string($textArea);
-        $result = false;
-        
-        if (count($_FILES) > 0)
-        {
-            //echo"IS A FILE</br>";
-            if (is_uploaded_file($_FILES['item']['tmp_name']))
+            }
+            else
             {
-                //echo"THE FILE IS UPLOADED</br>";
-                $targetDir = "/home/gangsta/Pictures/uploads/";
-                //$targetDir = "/media/gangsta/CEA43582A4356E59/Folder/uploads/";
-                $fileName = basename($_FILES["item"]["name"]);
-                $targetFilePath = $targetDir . date(DATE_ATOM,mktime()) . $fileName ;                        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
-                $allowTypes = array('jpg','png','jpeg','gif','pdf', 'webp',
-                    'JPG','PNG','JPEG','GIF','PDF', 'WEBP');
-                //echo"BEFORE TYPE CHECK:</br>" . $targetFilePath . "</BR>";
-                if(in_array($fileType, $allowTypes))
-                {
-                    //echo"CORRECT FILE TYPE</br>";
-                    if(move_uploaded_file($_FILES["item"]["tmp_name"], $targetFilePath))
-                    {
-                        /*echo"BEFORE QUERY</br>";
-                        echo"INSERT INTO ".$page." VALUES "
-                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
-                            . $targetFilePath . "','" . $teA . "')";*/
-                        $result = $this->query("INSERT INTO ".$page." VALUES "
-                            . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
-                            . $targetFilePath . "','" . $teA . "')");
-                        echo"MOVE IMAGE SUCCESS</br>" . $result;
-                    }
-                }                    
-            }                
-        }  
+                echo "UPDATE " . $page . " SET title = '" . $tiA .
+                "', description = '" . $teA . "' WHERE id = '" . $pageId . "'";
+                $result = $this->query("UPDATE " . $page . " SET title = '" . $tiA .
+                        "', description = '" . $teA . "' WHERE id = '" . $pageId . "'");
+            }
+        }
+        echo "ERROR: ". $_FILES['item']['error'];        
         return $result;        
     }
 
@@ -313,7 +325,7 @@ class UserDB extends mysqli
     public function delete_item($page)
     {
         //Delete the server stored file
-        unlink($_SESSION['filePath']);
+        unlink($_SESSION['file']);
         return $this->query("DELETE FROM ".$page." WHERE id=".$this->real_escape_string($_SESSION['id']));
     }
 

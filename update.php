@@ -12,6 +12,7 @@
 <?php
 require_once("Includes/funDa.php");
 session_start();
+$image = base64_encode_image($_SESSION['file']);
 
     echo $_SESSION['id'] . ": ID</br>";
     echo $_SESSION['owner'] . ": OWNER</br>";
@@ -26,7 +27,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
 {    
     $goodCreate = (UserDB::getInstance()->update_item(
             $_SESSION['page'],
-            $_SESSION['owner'], 
+            $_SESSION['id'], 
             filter_input(INPUT_POST, 'titleArea'),
             filter_input(INPUT_POST, 'textArea')));
     if ($goodCreate) 
@@ -36,7 +37,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
     }
     else
     {
-        echo("UPDATE FAILURE!". $_SESSION['page'] . $_SESSION['owner']);
+        echo("UPDATE FAILURE!". $_SESSION['page'] . $_SESSION['id']);
     }
 }
 ?>
@@ -54,14 +55,12 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
                      Title </br><textarea id="titleArea" name="titleArea"
                                           required/><?php echo ($_SESSION['titleArea']); ?></textarea></br>
                      <div class="error" id="divUserMess"></div>
-                     Description </br><textarea id="textArea" name="textArea"/>
-                         <?php echo ($_SESSION['textArea']); ?>
+                     Description </br><textarea id="textArea" name="textArea"/><?php echo ($_SESSION['textArea']); ?>
                      </textarea></br>
                      <input type="file" name="item" size="30"
                             accept=".png, .gif, .jpg, .jpeg, .webp"
-                            onchange="document.getElementById('preview').src =
-                                        window.URL.createObjectURL(this.files[0])"
-                            required></br>
+                            onchange="document.getElementById('preview').src
+                          = window.URL.createObjectURL(this.files[0])"></br>
                      <input type="submit" id="createBtn" value="Update">
                  </form>
                  <form name="cancelAccount" action="
@@ -71,7 +70,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
                  </form>
              </div>
              <div class="previewImage">
-                 <img id="preview" alt="preview image"/>
+                 <img id="preview" src="<?php echo $image ?>" alt="preview image"/>
              </div>                 
          </div>
          <script src="Includes/jsFuncs.js"></script>

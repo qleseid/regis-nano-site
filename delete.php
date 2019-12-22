@@ -13,6 +13,8 @@
 require_once("Includes/funDa.php");
 session_start();
 
+$image = base64_encode_image($_SESSION['file']);
+
     echo $_SESSION['id'] . ": ID</br>";
     echo $_SESSION['owner'] . ": OWNER</br>";
     echo $_SESSION['userId'] . ": USERID</br>";
@@ -49,11 +51,9 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
                  <form name="delete" action="delete.php" method="POST" 
                        enctype='multipart/form-data'>
                      Title </br><textarea id="titleArea" name="titleArea"
-                                          /><?php echo ($_SESSION['titleArea']); ?></textarea></br>
+                                          readonly="readonly"/><?php echo ($_SESSION['titleArea']); ?></textarea></br>
                      <div class="error" id="divUserMess"></div>
-                     Description </br><textarea id="textArea" name="textArea"/>
-                     <?php echo ($_SESSION['textArea']); ?></textarea></br>
-                     
+                     Description </br><textarea id="textArea" name="textArea"readonly="readonly"/><?php echo ($_SESSION['textArea']); ?></textarea></br>
                      <input type="submit" id="createBtn" value="Delete">
                  </form>
                  <form name="cancelAccount" action="
@@ -63,7 +63,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
                  </form>
              </div>
              <div class="previewImage">
-                 <img id="preview" alt="preview image"/>
+                 <img id="preview" src="<?php echo $image ?>" alt="preview image"/>
              </div>                 
          </div>
          <script src="Includes/jsFuncs.js"></script>

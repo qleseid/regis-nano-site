@@ -73,7 +73,7 @@ _END;
         $id = $row[0];
         $owner = $row[1];
         $title = htmlspecialchars($row[2]);
-        $_SESSION['filePath'] = $filePath = $row[3];
+        $_SESSION['file'] = $filePath = $row[3];
         $description = htmlspecialchars($row[4]);
         
         //Reset result to beginning
