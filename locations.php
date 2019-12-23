@@ -20,14 +20,19 @@ if(!$_SESSION['user'])
     header('Location: login.php');
     exit;
 }
-
+/*
 //Input debug info
 if($_SESSION['cmd'])
 {
-    //echo ("HOME: " .$_SESSION['cmd']);
+    echo $_SESSION['id'] . ": ID</br>";
+    echo $_SESSION['owner'] . ": OWNER</br>";
+    echo $_SESSION['userId'] . ": USERID</br>";
+    echo $_SESSION['cmd'] . ": CMD</br>";
+    echo $_SESSION['page'] . ": PAGE</br>";
 }
-
+*/
 navHeader('locations');
+//$_SESSION['$page'] = 'locations';
 
 echo <<<_END
 <html>
@@ -68,7 +73,7 @@ _END;
         $id = $row[0];
         $owner = $row[1];
         $title = htmlspecialchars($row[2]);
-        $filePath = $row[3];
+        $_SESSION['file'] = $filePath = $row[3];
         $description = htmlspecialchars($row[4]);
         
         //Reset result to beginning
@@ -88,66 +93,40 @@ echo <<<_END
         <div class="dividLine"/>
         <textarea id="titleArea">$title</textarea>
         <input type="hidden" id="id" value="$id"/>
+        <input type="hidden" id="file" value="$filePath"/>
         <input type="hidden" id="owner" value="$owner"/>
         <div>
             <div class="pos">
                 <div class="bin">
-                    <div class='big' onclick="javascript:nav('boxes.php')
+                    <div class='big' onclick="javascript:nav('locations.php')
 _END;
-            $_SESSION['loca'] = $id; 
+            $_SESSION['next'] = 'boxes.php';
             echo"\">";
             echo '<img class="sel" id="selectedImage" src="'
-                . base64_encode_image($filePath).'"/>';
-            
+                . base64_encode_image($filePath).'"/>';            
 echo <<<_END
                     </div>
-
                 </div>
-
             </div>
-
             <textarea id="textArea" class="pos">$description</textarea>
         </div>
         <div class="dividLine"/>
-        <section> <!--------------- TODO ------------------------- 
-                  THIS WILL BE BUILT BY PHP, ONLY EXAMPLE CURRENTLY -->
+        <section>
             <div class="rt-container">
                 <div class="horizontalScroll">
 _END;
    
    while($row = $locations->fetch_row())
    {
-        echo"<div class='item' onclick=\"javascript:selectImage('$row')\">";
+        $image = base64_encode_image($row[3]);
+        
+        echo"<div class='item' onclick=\"javascript:selectImage('".$row[0]."', "
+                . "'".$row[1]."', '".addslashes($row[2])."',"
+                . "'".$image."', '".addslashes($row[4])."', '".$row[3]."')\">";
         echo'<div class="bg">';
-        echo '<img src="'. base64_encode_image($row[3]).'"/>';
+        echo '<img src="'. $image .'"/>';
         echo "</div></div>";  
-   }                        
-                            /*
-                                                 <div class="item" onclick="javascript:selectImage('image/location1.jpeg')">
-                        <div class="bg">
-                            <img src="image/location1.jpeg">
-                        </div>
-                    </div>
-                    <div class="item" onclick="javascript:selectImage('image/location2.jpeg')">
-                        <div class="bg">
-                            <img src="image/location2.jpeg">
-                        </div>
-                    </div>
-                    <div class="item" onclick="javascript:selectImage('image/location3.jpeg')">
-                        <div class="bg">
-                            <img src="image/location3.jpeg">
-                        </div>
-                    </div>
-                    <div class="item" onclick="javascript:selectImage('image/location4.jpeg')">
-                        <div class="bg">
-                            <img src="image/location4.jpeg">
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="bg">
-                            <img src="image/location5.jpeg" onclick="javascript:selectImage('image/location5.jpeg')">
-                        </div>
-                    </div>*/
+   }
 echo <<<_END
                 </div>
             </div>

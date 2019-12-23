@@ -105,24 +105,33 @@ function checkUserMess()
 }
 
 //HOME SELECT IMAGE
-function selectImage(image)
-{
+function selectImage(id, owner, title, image, des, file)
+{    
     document.getElementById("selectedImage").src = image;
+    document.getElementById("titleArea").value = title;
+    document.getElementById("id").value = id;
+    document.getElementById("owner").value = owner;
+    document.getElementById("file").value = file;
+    document.getElementById("textArea").value = des;
 }
 
 //NAVIGATION TO NEXT PAGE
 function nav(page)
     {
-        window.location.href = page;
+        //window.location.href = page;
+        if(document.getElementById('id').value > 0)
+        {
+            post(page, 'selectedImage','GET');
+        }       
     }
 
 //METHOD TO CREATE A PHP POST
-function post(action, name, elemt)
+function post(action, name, meth='POST', elemt='input')
     {
         //document.getElementById("titleArea").value = "In Post!";
         const form = document.createElement('form');
-        var fields = ['titleArea', 'textArea', 'cmd', 'id', 'owner'];
-        form.method = 'POST';
+        var fields = ['titleArea', 'textArea', 'cmd', 'id', 'owner', 'file'];
+        form.method = meth;
         form.action = action;
 
         for (var x of fields)

@@ -31,7 +31,7 @@ function navHeader($page)
             case 'account':
                 popSess('account', $page);
                 header('Location: account.php');
-                exit;
+                exit; 
             case 'logout':
                 session_unset();
                 setcookie('','',1);
@@ -43,6 +43,26 @@ function navHeader($page)
                 exit;
         }
     }
+    else if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "GET")
+    {    
+        if(filter_input(INPUT_GET, 'cmd') == 'selectedImage')
+        {
+            $_SESSION['cmd'] = '';
+            $_SESSION['page'] = $page;
+            $_SESSION['file'] = filter_input(INPUT_GET, 'file');
+            $_SESSION['owner'] = filter_input(INPUT_GET, 'id');
+            $_SESSION[$page] = filter_input(INPUT_GET, 'id');
+            header('Location: '.$_SESSION['next']);
+            exit;
+        }
+        else if($_SESSION['page'] != $page)
+        {
+            //UserDB::getInstance()->get_owner_of_id($_SESSION['owner'], $page);
+            //$_SESSION['page']   = $page;
+        }
+           
+    }
+        
 }
 
 function popSess($cmd, $page)
@@ -51,6 +71,7 @@ function popSess($cmd, $page)
     $_SESSION['page']   = $page;
     $_SESSION['id']    = filter_input(INPUT_POST, 'id');
     $_SESSION['owner']    = filter_input(INPUT_POST, 'owner');
+    $_SESSION['file']    = filter_input(INPUT_POST, 'file');
     $_SESSION['titleArea'] = filter_input(INPUT_POST, 'titleArea');
     $_SESSION['textArea']  = filter_input(INPUT_POST, 'textArea');
 }
@@ -59,18 +80,19 @@ function navBuild($currPage)
 {
     if($currPage !== 'locations.php')
     {
-        echo ("<li onclick=\"javascript:post('$currPage', 'home', 'input')\">Home</li>");
+        echo ("<li onclick=\"javascript:post('$currPage', 'home')\">Home</li>");
     }
 echo <<<_END
-    <li onclick="javascript:post('$currPage', 'account', 'input')">Account</li>
-    <li onclick="javascript:post('$currPage', 'new', 'input')">New</li>
-    <li onclick="javascript:post('$currPage', 'update', 'input')">Update</li>
-    <li onclick="javascript:post('$currPage', 'delete', 'input')">Delete</li>
-    <li onclick="javascript:post('$currPage', 'logout', 'input')">Logout</li>
+    <li onclick="javascript:post('$currPage', 'account')">Account</li>
+    <li onclick="javascript:post('$currPage', 'new')">New</li>
+    <li onclick="javascript:post('$currPage', 'update')">Update</li>
+    <li onclick="javascript:post('$currPage', 'delete')">Delete</li>
+    <li onclick="javascript:post('$currPage', 'logout')">Logout</li>
 _END;
 
 }
 
+//Encodes image for movement between server and client
 function base64_encode_image($file) 
 {
     $filetype = filetype(basename($file));
@@ -83,6 +105,7 @@ function base64_encode_image($file)
     }
 }
 
+//USERDB CLASS
 class UserDB extends mysqli 
 {
     // single instance of self shared among all instances
@@ -201,6 +224,7 @@ class UserDB extends mysqli
         $result = $this->query("SELECT password, id FROM users
  	           WHERE name = '" . $nam . "'")->fetch_array(MYSQLI_NUM);
         $_SESSION['userId'] = $result[1];
+        //$_SESSION['cmd'] = 'login';
         
         return (password_verify($pword, $result[0]));
     }
@@ -212,7 +236,7 @@ class UserDB extends mysqli
         $tiA = $this->real_escape_string($titleArea);
         $teA = $this->real_escape_string($textArea);
         $result = false;
-        
+        //echo"IN CREATE, ABOUT TO CHECK IF IT HAS A FILE</br>";
         if (count($_FILES) > 0)
         {
             //echo"IS A FILE</br>";
@@ -223,7 +247,8 @@ class UserDB extends mysqli
                 //$targetDir = "/media/gangsta/CEA43582A4356E59/Folder/uploads/";
                 $fileName = basename($_FILES["item"]["name"]);
                 $targetFilePath = $targetDir . date(DATE_ATOM,mktime()) . $fileName ;                        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
-                $allowTypes = array('jpg','png','jpeg','gif','pdf', 'webp');
+                $allowTypes = array('jpg','png','jpeg','gif','pdf', 'webp',
+                    'JPG','PNG','JPEG','GIF','PDF', 'WEBP');
                 //echo"BEFORE TYPE CHECK:</br>" . $targetFilePath . "</BR>";
                 if(in_array($fileType, $allowTypes))
                 {
@@ -231,18 +256,77 @@ class UserDB extends mysqli
                     if(move_uploaded_file($_FILES["item"]["tmp_name"], $targetFilePath))
                     {
                         //echo"BEFORE QUERY</br>";
-                        echo"INSERT INTO ".$page." VALUES "
+                        /*echo"INSERT INTO ".$page." VALUES "
                             . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
-                            . $targetFilePath . "','" . $teA . "')";
+                            . $targetFilePath . "','" . $teA . "')";*/
                         $result = $this->query("INSERT INTO ".$page." VALUES "
                             . "(NULL, '" . $pageId . "', '" . $tiA . "', '" 
                             . $targetFilePath . "','" . $teA . "')");
-                        echo"MOVE IMAGE SUCCESS</br>";
+                        //echo"MOVE IMAGE SUCCESS</br>" . $result;
                     }
                 }                    
             }                
-        }  
+        }            
+        echo "ERROR: ". $_FILES['item']['error'];        
         return $result;        
+    }
+
+    //UPDATE ITEM
+    public function update_item($page, $pageId, $titleArea, $textArea)
+    {
+        echo"IN CREATE ITEM</br>";
+        $tiA = $this->real_escape_string($titleArea);
+        $teA = $this->real_escape_string($textArea);
+        $result = false;
+        
+        if (count($_FILES) > 0)
+        {
+            echo"IS A FILE</br>";
+            if (is_uploaded_file($_FILES['item']['tmp_name']))
+            {
+                echo"THE FILE IS UPLOADED</br>";
+                $targetDir = "/home/gangsta/Pictures/uploads/";
+                //$targetDir = "/media/gangsta/CEA43582A4356E59/Folder/uploads/";
+                $fileName = basename($_FILES["item"]["name"]);
+                $targetFilePath = $targetDir . date(DATE_ATOM,mktime()) . $fileName ;                        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+                $allowTypes = array('jpg','png','jpeg','gif','pdf', 'webp',
+                    'JPG','PNG','JPEG','GIF','PDF', 'WEBP');
+                echo"BEFORE TYPE CHECK:</br>" . $targetFilePath . "</BR>";
+                if(in_array($fileType, $allowTypes))
+                {
+                    echo"CORRECT FILE TYPE</br>";
+                    if(move_uploaded_file($_FILES["item"]["tmp_name"], $targetFilePath))
+                    {
+                        echo"BEFORE QUERY</br>";
+                        echo"UPDATE ".$page." SET title = '".$tiA.
+                        "', description = '".$teA."', filePath = '".$targetFilePath.
+                                "' WHERE id = '".$pageId."'";
+                        $result = $this->query("UPDATE ".$page." SET title = '".$tiA.
+                        "', description = '".$teA."', filePath = '".$targetFilePath.
+                                "' WHERE id = '".$pageId."'");
+                        unlink($_SESSION['file']);
+                        echo"MOVE IMAGE SUCCESS</br>" . $result;
+                    }
+                }                    
+            }
+            else
+            {
+                echo "UPDATE " . $page . " SET title = '" . $tiA .
+                "', description = '" . $teA . "' WHERE id = '" . $pageId . "'";
+                $result = $this->query("UPDATE " . $page . " SET title = '" . $tiA .
+                        "', description = '" . $teA . "' WHERE id = '" . $pageId . "'");
+            }
+        }
+        echo "ERROR: ". $_FILES['item']['error'];        
+        return $result;        
+    }
+
+    //DELETE ITEM
+    public function delete_item($page)
+    {
+        //Delete the server stored file
+        unlink($_SESSION['file']);
+        return $this->query("DELETE FROM ".$page." WHERE id=".$this->real_escape_string($_SESSION['id']));
     }
 
     //GET ITEMS BY OWNER
@@ -252,65 +336,15 @@ class UserDB extends mysqli
         $pg = $this->real_escape_string($page);
         return $this->query("SELECT * FROM ".$pg." WHERE owner_id = " . $oid);
     }
-    
-    //*******TODO**********INSERT WISH
-    function insert_wish($userID, $description, $duedate) 
-    {
-        $descript = $this->real_escape_string($description);
-        $wID = $this->real_escape_string($userID);
-        $dDate = $this->real_escape_string($duedate);
-        
-        if ($this->format_date_for_sql($dDate) == null) {
-            $this->query("INSERT INTO wishes (user_id, description)" .
-                    " VALUES (" . $wID . ", '" . $descript . "')");
-        } 
-        else 
-        {
-            $this->query("INSERT INTO wishes (user_id, description, due_date)" .
-                    " VALUES (" . $wID . ", '" . $descript . "', "
-                    . $this->format_date_for_sql($dDate) . ")");
-        }
-    }
 
-    //*******TODO**********DATE FORMAT
-    function format_date_for_sql($date) 
+    //GET OWNER OF ID
+    public function get_owner_of_id($id, $page) 
     {
-        if ($date == "")
-        {
-            return null;
-        }
-        else
-        {
-            $dateParts = date_parse($date);
-            return $dateParts["year"] * 10000 + $dateParts["month"] * 100 + $dateParts["day"];
-        }
-    }
-
-    //*******TODO**********UPDATE ITEM
-    public function update_wish($wishID, $description, $duedate)
-    {
-        $descript = $this->real_escape_string($description);
-        $dDate = $this->real_escape_string($duedate);
-        $wID = $wishID;
-        
-        if ($dDate == '') 
-        {
-            $this->query("UPDATE wishes SET description = '" . $descript . "',
-             due_date = NULL WHERE id = " . $wID);
-        } 
-        else 
-        {
-            $this->query("UPDATE wishes SET description = '" . $descript .
-                    "', due_date = '" . $this->format_date_for_sql($duedate)
-                    . "' WHERE id = " . $wID);
-        }
-    }
-
-    //*******TODO**********DELETE WISH
-    function delete_wish($wishID) 
-    {
-        $this->query("DELETE FROM wishes WHERE id = " . $wishID);
-    }
-
+        $oid = $this->real_escape_string($id);
+        $pg = $this->real_escape_string($page);
+        $result = $this->query("SELECT owner_id FROM ".$pg." WHERE id = " . $oid)
+                ->fetch_array(MYSQLI_NUM);
+        $_SESSION['owner'] = $result[0];
+    }      
 }
 ?>

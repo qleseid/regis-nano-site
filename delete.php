@@ -13,6 +13,8 @@
 require_once("Includes/funDa.php");
 session_start();
 
+$image = base64_encode_image($_SESSION['file']);
+
     echo $_SESSION['id'] . ": ID</br>";
     echo $_SESSION['owner'] . ": OWNER</br>";
     echo $_SESSION['userId'] . ": USERID</br>";
@@ -24,11 +26,8 @@ $goodCreate = false;
 // Create a new item
 if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST") 
 {    
-    $goodCreate = (UserDB::getInstance()->create_item(
-            $_SESSION['page'],
-            $_SESSION['owner'], 
-            filter_input(INPUT_POST, 'titleArea'),
-            filter_input(INPUT_POST, 'textArea')));
+    $goodCreate = (UserDB::getInstance()->delete_item(
+            $_SESSION['page']));
     if ($goodCreate) 
     {
         header('Location:'. $_SESSION['page'].'.php');
@@ -44,24 +43,18 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
      <head>
          <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
          <link href="css/new.css" type="text/css" rel="stylesheet" media="all" />
-         <title>New</title>
+         <title>Delete</title>
      </head>
      <body>   
          <div class="body">
              <div class="newItem">
-                 <form name="new" action="new.php" method="POST" 
+                 <form name="delete" action="delete.php" method="POST" 
                        enctype='multipart/form-data'>
                      Title </br><textarea id="titleArea" name="titleArea"
-                                          required/></textarea></br>
+                                          readonly="readonly"/><?php echo ($_SESSION['titleArea']); ?></textarea></br>
                      <div class="error" id="divUserMess"></div>
-                     Description </br><textarea id="textArea" name="textArea"/>
-                     </textarea></br>
-                     <input type="file" name="item" size="30"
-                            accept=".png, .gif, .jpg, .jpeg, .webp"
-                            onchange="document.getElementById('preview').src =
-                             window.URL.createObjectURL(this.files[0])"
-                   required></br>
-                     <input type="submit" id="createBtn" value="Create">
+                     Description </br><textarea id="textArea" name="textArea"readonly="readonly"/><?php echo ($_SESSION['textArea']); ?></textarea></br>
+                     <input type="submit" id="createBtn" value="Delete">
                  </form>
                  <form name="cancelAccount" action="
                      <?php echo $_SESSION['page'].".php"?>" 
@@ -70,7 +63,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') == "POST")
                  </form>
              </div>
              <div class="previewImage">
-                 <img id="preview" alt="preview image"/>
+                 <img id="preview" src="<?php echo $image ?>" alt="preview image"/>
              </div>                 
          </div>
          <script src="Includes/jsFuncs.js"></script>
